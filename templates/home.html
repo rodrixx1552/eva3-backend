@@ -3,338 +3,561 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>API de Productos | Django DRF</title>
-    <!-- Bootstrap CSS -->
+    <title>SuperAPI Market - Gestor de Inventario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --super-red: #e74c3c;
+            --super-green: #27ae60;
+            --super-blue: #3498db;
+            --super-yellow: #f1c40f;
+        }
+        
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
-            font-family: 'Arial', sans-serif;
-            padding-top: 30px;
         }
-        .main-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 40px;
-            margin-bottom: 40px;
-            border: none;
+        
+        .navbar-super {
+            background: linear-gradient(90deg, var(--super-red), var(--super-yellow));
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
         }
-        .header-title {
-            color: #2c3e50;
-            font-weight: 800;
-            margin-bottom: 15px;
-            font-size: 2.8rem;
-        }
-        .header-subtitle {
-            color: #7f8c8d;
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-        }
-        .tech-badge {
-            background: linear-gradient(45deg, #3498db, #2ecc71);
+        
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
             color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            margin: 5px;
-            display: inline-block;
-            font-weight: 600;
-            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+            padding: 80px 20px;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 40px;
         }
-        .feature-card {
+        
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border-top: 5px solid var(--super-green);
+            transition: all 0.3s;
+            height: 100%;
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .product-img {
+            height: 150px;
+            background: linear-gradient(45deg, #e0e0e0, #f5f5f5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .product-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--super-green);
+        }
+        
+        .product-stock {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .stock-high { background: #d4edda; color: #155724; }
+        .stock-medium { background: #fff3cd; color: #856404; }
+        .stock-low { background: #f8d7da; color: #721c24; }
+        
+        .dashboard-card {
             background: white;
             border-radius: 15px;
             padding: 25px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
             margin-bottom: 25px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-            border-top: 5px solid #3498db;
-            transition: all 0.3s ease;
-            height: 100%;
+            text-align: center;
         }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        
+        .dashboard-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
         }
-        .feature-icon {
-            font-size: 2.8rem;
-            color: #3498db;
-            margin-bottom: 20px;
+        
+        .dashboard-count {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--super-blue);
         }
-        .btn-api {
-            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        
+        .btn-super {
+            background: linear-gradient(45deg, var(--super-red), var(--super-yellow));
             border: none;
             color: white;
-            padding: 14px 35px;
+            padding: 12px 30px;
             border-radius: 50px;
             font-weight: 700;
-            font-size: 1.1rem;
-            text-decoration: none;
-            display: inline-block;
             transition: all 0.3s;
-            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
         }
-        .btn-api:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 25px rgba(255, 107, 107, 0.6);
+        
+        .btn-super:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(231, 76, 60, 0.4);
             color: white;
         }
-        .endpoint-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 5px solid #2ecc71;
+        
+        .form-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         }
-        .method-tag {
-            display: inline-block;
-            padding: 6px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-right: 15px;
-            min-width: 80px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        .method-get { background: #27ae60; color: white; }
-        .method-post { background: #2980b9; color: white; }
-        .method-put { background: #f39c12; color: white; }
-        .method-delete { background: #e74c3c; color: white; }
-        .footer-text {
-            color: white;
-            text-align: center;
-            padding: 20px;
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-        .heart {
-            color: #ff6b6b;
-            animation: pulse 1.5s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        .api-example {
+        
+        .api-badge {
             background: #2c3e50;
-            color: #ecf0f1;
-            padding: 20px;
+            color: white;
+            padding: 10px 20px;
             border-radius: 10px;
             font-family: 'Courier New', monospace;
-            margin-top: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .footer-super {
+            background: linear-gradient(90deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px 0;
+            margin-top: 50px;
+            border-radius: 30px 30px 0 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-lg-10 col-xl-9">
-                <!-- Main Card -->
-                <div class="main-card">
-                    <!-- Header -->
-                    <div class="text-center mb-5">
-                        <h1 class="header-title">
-                            <i class="fas fa-shopping-cart me-3"></i>
-                            API de Productos
-                        </h1>
-                        <p class="header-subtitle">
-                            Sistema REST para gestión de productos con Django REST Framework
-                        </p>
-                        
-                        <div class="mt-4">
-                            <span class="tech-badge">
-                                <i class="fas fa-python me-2"></i> Django 5
-                            </span>
-                            <span class="tech-badge">
-                                <i class="fas fa-bolt me-2"></i> DRF
-                            </span>
-                            <span class="tech-badge">
-                                <i class="fas fa-database me-2"></i> PostgreSQL
-                            </span>
-                            <span class="tech-badge">
-                                <i class="fas fa-cloud me-2"></i> Render
-                            </span>
-                        </div>
-                    </div>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-super">
+        <div class="container">
+            <a class="navbar-brand text-white fw-bold fs-3" href="#">
+                <i class="fas fa-shopping-cart me-2"></i>SuperAPI Market
+            </a>
+            <div class="navbar-nav">
+                <a class="nav-link text-white" href="#productos">
+                    <i class="fas fa-boxes me-1"></i> Productos
+                </a>
+                <a class="nav-link text-white" href="#agregar">
+                    <i class="fas fa-plus-circle me-1"></i> Agregar
+                </a>
+                <a class="nav-link text-white" href="/admin/" target="_blank">
+                    <i class="fas fa-user-cog me-1"></i> Admin
+                </a>
+                <a class="nav-link text-white" href="/api/productos/" target="_blank">
+                    <i class="fas fa-code me-1"></i> API
+                </a>
+            </div>
+        </div>
+    </nav>
 
-                    <!-- Features -->
-                    <div class="row mb-5">
-                        <div class="col-md-3">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon">
-                                    <i class="fas fa-rocket"></i>
-                                </div>
-                                <h4>Rendimiento</h4>
-                                <p class="text-muted">Respuestas ultra rápidas con Django optimizado</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon">
-                                    <i class="fas fa-shield-alt"></i>
-                                </div>
-                                <h4>Seguridad</h4>
-                                <p class="text-muted">Autenticación y validación integrada</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon">
-                                    <i class="fas fa-globe"></i>
-                                </div>
-                                <h4>Cloud</h4>
-                                <p class="text-muted">Desplegado en Render con PostgreSQL</p>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="feature-card text-center">
-                                <div class="feature-icon">
-                                    <i class="fas fa-code"></i>
-                                </div>
-                                <h4>API REST</h4>
-                                <p class="text-muted">Endpoints RESTful para integración</p>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="fas fa-store-alt me-2"></i>SuperAPI Market
+            </h1>
+            <p class="lead mb-4">Sistema de gestión de inventario para supermercados</p>
+            <p class="mb-4">Backend en Django REST Framework + Frontend interactivo</p>
+            <a href="#productos" class="btn-super btn-lg">
+                <i class="fas fa-play-circle me-2"></i> Ver Catálogo
+            </a>
+        </div>
+    </section>
 
-                    <!-- API Endpoints -->
-                    <h3 class="mb-4 border-bottom pb-3">
-                        <i class="fas fa-plug me-2"></i> Endpoints Disponibles
-                    </h3>
-                    
-                    <div class="mb-5">
-                        <div class="endpoint-box">
-                            <div class="d-flex align-items-center">
-                                <span class="method-tag method-get">GET</span>
-                                <div>
-                                    <code class="fs-5">/api/productos/</code>
-                                    <p class="mb-0 text-muted mt-1">Obtiene la lista completa de productos</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="endpoint-box">
-                            <div class="d-flex align-items-center">
-                                <span class="method-tag method-post">POST</span>
-                                <div>
-                                    <code class="fs-5">/api/productos/</code>
-                                    <p class="mb-0 text-muted mt-1">Crea un nuevo producto en el sistema</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="endpoint-box">
-                            <div class="d-flex align-items-center">
-                                <span class="method-tag method-get">GET</span>
-                                <div>
-                                    <code class="fs-5">/api/productos/{id}/</code>
-                                    <p class="mb-0 text-muted mt-1">Obtiene un producto específico por ID</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="endpoint-box">
-                            <div class="d-flex align-items-center">
-                                <span class="method-tag method-put">PUT</span>
-                                <div>
-                                    <code class="fs-5">/api/productos/{id}/</code>
-                                    <p class="mb-0 text-muted mt-1">Actualiza completamente un producto</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="endpoint-box">
-                            <div class="d-flex align-items-center">
-                                <span class="method-tag method-delete">DELETE</span>
-                                <div>
-                                    <code class="fs-5">/api/productos/{id}/</code>
-                                    <p class="mb-0 text-muted mt-1">Elimina un producto del sistema</p>
-                                </div>
-                            </div>
-                        </div>
+    <!-- Dashboard Stats -->
+    <div class="container mb-5">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon text-success">
+                        <i class="fas fa-boxes"></i>
                     </div>
-
-                    <!-- Admin Access -->
-                    <div class="mb-5">
-                        <h4><i class="fas fa-user-cog me-2"></i> Panel de Administración</h4>
-                        <div class="endpoint-box">
-                            <div class="d-flex align-items-center">
-                                <span class="method-tag method-get">GET</span>
-                                <div>
-                                    <code class="fs-5">/admin/</code>
-                                    <p class="mb-0 text-muted mt-1">Acceso al panel de administración de Django (requiere login)</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="text-center mt-5">
-                        <a href="/api/productos/" class="btn-api me-4">
-                            <i class="fas fa-play-circle me-2"></i> Probar API Ahora
-                        </a>
-                        <a href="/admin/" class="btn btn-outline-primary btn-lg px-4">
-                            <i class="fas fa-cog me-2"></i> Panel Admin
-                        </a>
-                    </div>
-
-                    <!-- API Example -->
-                    <div class="mt-5">
-                        <h5><i class="fas fa-code me-2"></i> Ejemplo de Uso</h5>
-                        <div class="api-example">
-                            <p><span style="color: #2ecc71"># Crear un producto con curl</span></p>
-                            <p>curl -X POST https://eva3-backend.onrender.com/api/productos/ \</p>
-                            <p>  -H "Content-Type: application/json" \</p>
-                            <p>  -d '{</p>
-                            <p>    "nombre": "Laptop Gamer",</p>
-                            <p>    "descripcion": "Laptop para gaming",</p>
-                            <p>    "precio": 1299.99,</p>
-                            <p>    "stock": 15</p>
-                            <p>  }'</p>
-                        </div>
-                    </div>
+                    <h5>Total Productos</h5>
+                    <div class="dashboard-count" id="totalProducts">0</div>
                 </div>
-
-                <!-- Footer -->
-                <div class="footer-text">
-                    <p>
-                        <i class="fas fa-heart heart me-2"></i>
-                        Desarrollado para evaluación de Programación Backend - INACAP 2025
-                    </p>
-                    <p class="mt-2">
-                        <i class="fas fa-graduation-cap me-2"></i>
-                        Docente: Boris Astorga | Tecnologías: Django, DRF, PostgreSQL, Render
-                    </p>
-                    <p class="mt-3">
-                        <a href="https://github.com/rodrixx1552/eva3-backend" class="text-white me-3">
-                            <i class="fab fa-github me-1"></i> Código en GitHub
-                        </a>
-                        |
-                        <a href="https://www.django-rest-framework.org/" class="text-white ms-3">
-                            <i class="fas fa-book me-1"></i> Documentación DRF
-                        </a>
-                    </p>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon text-primary">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h5>Valor Inventario</h5>
+                    <div class="dashboard-count">$<span id="totalValue">0</span></div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon text-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <h5>Stock Bajo</h5>
+                    <div class="dashboard-count" id="lowStock">0</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="dashboard-card">
+                    <div class="dashboard-icon text-info">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h5>API Status</h5>
+                    <div class="dashboard-count" id="apiStatus">✓</div>
+                    <small class="text-muted">Django DRF + PostgreSQL</small>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Product Catalog -->
+    <section class="container mb-5" id="productos">
+        <h2 class="mb-4 border-bottom pb-3">
+            <i class="fas fa-box-open me-2"></i>Catálogo de Productos
+            <span class="badge bg-primary ms-2" id="productCount">0 productos</span>
+        </h2>
+        
+        <div class="row" id="productList">
+            <!-- Los productos se cargarán aquí con JavaScript -->
+            <div class="col-12 text-center py-5">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Cargando productos...</span>
+                </div>
+                <p class="mt-3">Cargando catálogo desde la API...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Add Product Form -->
+    <section class="container mb-5" id="agregar">
+        <div class="form-section">
+            <h3 class="mb-4">
+                <i class="fas fa-plus-circle me-2 text-success"></i>Agregar Nuevo Producto
+            </h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="addProductForm">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre del Producto</label>
+                            <input type="text" class="form-control" id="productName" 
+                                   placeholder="Ej: Leche Entera 1L" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-control" id="productDesc" rows="3"
+                                      placeholder="Descripción detallada del producto"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Precio ($)</label>
+                                <input type="number" step="0.01" class="form-control" 
+                                       id="productPrice" placeholder="Ej: 1250.50" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock</label>
+                                <input type="number" class="form-control" id="productStock" 
+                                       placeholder="Ej: 50" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-super w-100">
+                            <i class="fas fa-save me-2"></i>Guardar Producto en la API
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="mb-3">
+                        <i class="fas fa-code me-2"></i>Llamada a la API
+                    </h5>
+                    <div class="api-badge">
+                        <strong>POST</strong> /api/productos/
+                    </div>
+                    <pre class="bg-light p-3 rounded" id="apiExample">
+{
+    "nombre": "Producto Ejemplo",
+    "descripcion": "Descripción del producto",
+    "precio": 1000.00,
+    "stock": 25
+}</pre>
+                    
+                    <div class="mt-4">
+                        <h6><i class="fas fa-link me-2"></i>Endpoints disponibles:</h6>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <code>GET /api/productos/</code> - Ver todos
+                            </li>
+                            <li class="list-group-item">
+                                <code>POST /api/productos/</code> - Crear
+                            </li>
+                            <li class="list-group-item">
+                                <code>PUT /api/productos/1/</code> - Actualizar
+                            </li>
+                            <li class="list-group-item">
+                                <code>DELETE /api/productos/1/</code> - Eliminar
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-super">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>
+                        <i class="fas fa-shopping-cart me-2"></i>SuperAPI Market
+                    </h4>
+                    <p>Sistema de gestión de inventario desarrollado con Django REST Framework.</p>
+                    <p>Desplegado en Render con base de datos PostgreSQL.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Enlaces</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/api/productos/" class="text-white">API REST</a></li>
+                        <li><a href="/admin/" class="text-white">Panel Admin</a></li>
+                        <li><a href="https://render.com" class="text-white">Render</a></li>
+                        <li><a href="https://www.django-rest-framework.org/" class="text-white">DRF Docs</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Tecnologías</h5>
+                    <span class="badge bg-light text-dark me-1 mb-1">Django</span>
+                    <span class="badge bg-light text-dark me-1 mb-1">DRF</span>
+                    <span class="badge bg-light text-dark me-1 mb-1">PostgreSQL</span>
+                    <span class="badge bg-light text-dark me-1 mb-1">JavaScript</span>
+                    <span class="badge bg-light text-dark me-1 mb-1">Bootstrap</span>
+                </div>
+            </div>
+            <hr class="bg-white">
+            <div class="text-center">
+                <p class="mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>Evaluación Backend - INACAP 2025
+                    | Docente: Boris Astorga
+                </p>
+            </div>
+        </div>
+    </footer>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript para interactuar con la API -->
     <script>
-        // Efecto hover en tarjetas
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px)';
+        const API_URL = '/api/productos/';
+        
+        // Cargar productos al iniciar
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProducts();
+            
+            // Configurar formulario
+            document.getElementById('addProductForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addProduct();
             });
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
+            
+            // Actualizar ejemplo en tiempo real
+            document.getElementById('productName').addEventListener('input', updateApiExample);
+            document.getElementById('productPrice').addEventListener('input', updateApiExample);
+            document.getElementById('productStock').addEventListener('input', updateApiExample);
         });
+        
+        // Función para cargar productos desde la API
+        async function loadProducts() {
+            try {
+                const response = await fetch(API_URL);
+                const products = await response.json();
+                
+                updateDashboard(products);
+                displayProducts(products);
+                
+            } catch (error) {
+                console.error('Error cargando productos:', error);
+                document.getElementById('productList').innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error conectando a la API. Asegúrate que esté funcionando.
+                        </div>
+                        <a href="/api/productos/" class="btn btn-primary" target="_blank">
+                            Probar API manualmente
+                        </a>
+                    </div>
+                `;
+            }
+        }
+        
+        // Actualizar dashboard con estadísticas
+        function updateDashboard(products) {
+            const totalProducts = products.length;
+            const totalValue = products.reduce((sum, p) => sum + (parseFloat(p.precio) * parseInt(p.stock)), 0);
+            const lowStock = products.filter(p => parseInt(p.stock) < 10).length;
+            
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('totalValue').textContent = totalValue.toLocaleString('es-CL');
+            document.getElementById('lowStock').textContent = lowStock;
+            document.getElementById('productCount').textContent = `${totalProducts} productos`;
+            
+            // Actualizar status API
+            document.getElementById('apiStatus').innerHTML = `
+                <span class="text-success">✓ Online</span>
+                <br><small>${totalProducts} registros</small>
+            `;
+        }
+        
+        // Mostrar productos en el catálogo
+        function displayProducts(products) {
+            const productList = document.getElementById('productList');
+            
+            if (products.length === 0) {
+                productList.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            No hay productos en el inventario. ¡Agrega el primero!
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            
+            products.forEach(product => {
+                const stockClass = product.stock > 20 ? 'stock-high' : 
+                                  product.stock > 5 ? 'stock-medium' : 'stock-low';
+                
+                html += `
+                <div class="col-md-4 col-lg-3">
+                    <div class="product-card">
+                        <div class="product-img">
+                            <i class="fas fa-box fa-3x text-muted"></i>
+                        </div>
+                        <h5 class="mb-2">${product.nombre}</h5>
+                        <p class="text-muted small mb-3">${product.descripcion || 'Sin descripción'}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="product-price">$${parseFloat(product.precio).toLocaleString('es-CL')}</div>
+                                <span class="${stockClass} product-stock">
+                                    <i class="fas fa-cubes me-1"></i>${product.stock} unidades
+                                </span>
+                            </div>
+                            <div class="text-end">
+                                <small class="text-muted">ID: ${product.id}</small>
+                                <br>
+                                <button class="btn btn-sm btn-outline-danger mt-1" onclick="deleteProduct(${product.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+            
+            productList.innerHTML = html;
+        }
+        
+        // Agregar nuevo producto
+        async function addProduct() {
+            const productData = {
+                nombre: document.getElementById('productName').value,
+                descripcion: document.getElementById('productDesc').value,
+                precio: parseFloat(document.getElementById('productPrice').value),
+                stock: parseInt(document.getElementById('productStock').value)
+            };
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify(productData)
+                });
+                
+                if (response.ok) {
+                    alert('✅ Producto agregado exitosamente!');
+                    document.getElementById('addProductForm').reset();
+                    loadProducts(); // Recargar la lista
+                } else {
+                    alert('❌ Error al agregar producto');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error de conexión con la API');
+            }
+        }
+        
+        // Eliminar producto
+        async function deleteProduct(id) {
+            if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+            
+            try {
+                const response = await fetch(`${API_URL}${id}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (response.ok) {
+                    alert('✅ Producto eliminado');
+                    loadProducts(); // Recargar
+                } else {
+                    alert('❌ Error al eliminar');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('❌ Error de conexión');
+            }
+        }
+        
+        // Actualizar ejemplo de API en tiempo real
+        function updateApiExample() {
+            const example = {
+                nombre: document.getElementById('productName').value || "Producto Ejemplo",
+                descripcion: document.getElementById('productDesc').value || "Descripción del producto",
+                precio: parseFloat(document.getElementById('productPrice').value) || 1000.00,
+                stock: parseInt(document.getElementById('productStock').value) || 25
+            };
+            
+            document.getElementById('apiExample').textContent = JSON.stringify(example, null, 4);
+        }
+        
+        // Helper para obtener CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </body>
 </html>
